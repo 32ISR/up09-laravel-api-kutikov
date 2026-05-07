@@ -7,7 +7,5 @@ use Illuminate\Support\Facades\Route;
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
-Router::gest('/test', function() {
-    return "dsa";
-});
+
 Route::post('/register', [AuthController::class, 'register']);
