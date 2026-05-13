@@ -11,12 +11,7 @@ class AuthController extends Controller
 {
     public function register(Request $request): JsonResponse
     {
-                return response()->json([
-                    "a" => "b"
-        ])->header('Content-Length', '9');
-
-        // dd($request);
-                $data = $request->validate([
+        $data = $request->validate([
             "email" => "email|unique:users|required",
             "name" => "string|required|max:255",
             "password" => "string|required|min:8|confirmed"
@@ -29,7 +24,5 @@ class AuthController extends Controller
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
-
-        
     }
 }
