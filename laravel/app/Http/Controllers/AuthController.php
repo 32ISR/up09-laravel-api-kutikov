@@ -39,9 +39,31 @@ class AuthController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function login()
+    public function login(Request $request)
     {
-        //
+        // валидация полей email, password (из требований оставить только "обязательное поле" и тип данных)
+        $data = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ]);
+
+        $user = User::where('email', $data['email'])->first();
+
+        if (!$user || !Hash::check($data['password'], $user->password)) {
+            return response()->json([
+                'message' => 'Почта или пароль неправильные'
+            ], 401);
+        }
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'access_token' => $token,
+            'user' => $user,
+            'token_type' => "Bearer"
+        ], 200);
+
+        // проверьте наличие юзера (идентично с JS) и верните 401 если его нет с сообщением (message) "Почта или пароль неправильный"
     }
 
     /**
@@ -49,7 +71,9 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
-        //
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json(['message' => 'Сессия успешно уничтожена'], 200);
     }
 
     /**
